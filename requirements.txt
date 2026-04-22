@@ -1,5 +1,7 @@
-numpy
 pandas
+requests
+numpy
 scikit-learn
 python-dotenv
-requests
+matplotlib
+geopandas
