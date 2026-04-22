@@ -3,7 +3,7 @@
 A county-level analysis of rent burden, fair market rents, and labor market
 conditions across California's 58 counties from 2012 to 2023. Using data from 
 the U.S. Census Bureau, HUD, and the Bureau of Labor Statistics, this project 
-clusters California counties into three policy-relevant tiers based on their 
+clusters California counties into four policy-relevant tiers based on their 
 housing and labor market conditions.
 
 ## Introduction
@@ -13,61 +13,65 @@ on rent, does not affect all California counties equally. This project
 examines where rent burden is highest, where labor markets are weakest, and
 how these conditions have shifted over time. Using K-Means clustering applied 
 to three variables (median gross rent, HUD 2-bedroom fair market rent, and unemployment 
-rate), counties are grouped into three tiers: high rent burden, high unemployment 
-burden, and moderate burden. The analysis covers 2012 to 2023, allowing us to track 
-how county-level housing stress changed before, 4during, and after the COVID-19 pandemic.
+rate), counties are grouped into four tiers: high rent burden, moderate rent burden, low burden, 
+and high unemployment burden. The analysis covers 2012 to 2023, allowing us to track 
+how county-level housing stress changed before, during, and after the COVID-19 pandemic.
 
 ## Data Sources
 
 | # | Name | Source | Type | Fields | Format |
 |---|------|--------|------|--------|--------|
 | 1 | ACS 5-Year Estimates | census.gov | API | NAME, B25064_001E (median gross rent), B25070_010E (renters paying 50%+ of income on rent) | JSON via API, saved as CSV |
-| 2 | HUD Fair Market Rents | huduser.gov | File | county name, state, year, FMR for 0-4 bedroom units | XLSX, one file per year |
+| 2 | HUD Fair Market Rents | huduser.gov | File | county name, state, year, FMR for 0-4 bedroom units | CSV, single historical file covering 1983 to present |
 | 3 | BLS Local Area Unemployment Statistics | data.ca.gov | File | county name, year, labor force, employment, unemployment rate | CSV |
 
 ## Analysis
 
 The pipeline loads and merges all three datasets at the county-year level,
 joining on county FIPS code (Census and HUD) and county name (LAUS). After
-cleaning and merging, K-Means clustering (k=3) is applied to three scaled
+cleaning and merging, K-Means clustering (k=4) is applied to three scaled
 features: median gross rent, HUD 2-bedroom fair market rent, and unemployment 
 rate. Features are standardized using StandardScaler before clustering so that
 no single variable dominates due to differences in units or scale.
 
-The number of clusters (k=3) is a deliberate design choice. Three tiers map
-directly onto three distinct policy contexts that appear in the data: counties 
-where rents are high and unemployment is low (coastal urban markets), counties
-where unemployment is high and rents are low (rural and inland markets), and 
-counties that fall in between on both dimensions. This three-tier structure also 
-aligns with how housing policy research typically categorizes county-level need.
+The number of clusters (k=4) was chosen after evaluating k=2 through k=6. K=3 produced a 
+24/31/2 county split where one tier contained only two counties, which is not useful for 
+policy interpretation. K=4 produced a more balanced 14/15/26/2 distribution and surfaced a 
+meaningful distinction between Bay Area coastal counties with very high rents and low unemployment, 
+and suburban metros like Los Angeles where rents are rising but labor markets remain relatively stable. 
 
 Results are visualized as a cluster summary bar chart, a 2023 county scatter plot,
 a tier-over-time line chart, and a color-coded California county map.
 
 ## Summary of Results
 
-K-Means clustering identified three distinct county types across the 2012-2023 period. 
-High rent burden counties, concentrated along the coast and in the Bay Area, average 
-roughly $1,900 in median gross rent and $2,400 in HUD fair market rent, with unemployment
-averaging around 4.6%. High unemployment burden counties, mostly rural and inland, show 
-the inverse pattern: low rents but unemployment averaging over 12%. Moderate burden counties 
-fall between these xtremes on both dimensions.
+K-Means clustering identified four distinct county types across the 2012-2023
+period. High rent burden counties (14 counties) are concentrated along the
+coast and in the Bay Area, averaging $2,204 in median gross rent and 4%
+unemployment. Moderate rent burden counties (15 counties) include large
+suburban metros like Los Angeles, Sacramento, and Riverside, averaging $1,605
+in median gross rent and 5% unemployment. Low burden counties (26 counties)
+cover most inland and rural areas, averaging $1,061 in median gross rent and
+7% unemployment. The label reflects where these counties fall relative to the
+rest of the state, not that housing is affordable or that residents are not
+stretched. High unemployment burden counties (2 counties), Colusa and
+Imperial, average 13% unemployment and $913 in median gross rent, reflecting
+structural conditions tied to agricultural and border economies.
 
-The tier-over-time analysis reveals a clear statewide shift. In 2012, 44 of
-58 counties were classified as high unemployment burden, a legacy of the
-Great Recession. By 2019 that number had fallen to 3 as the labor market
-recovered, but high rent burden counties grew steadily from 1 to 25 over the same period. 
-COVID-19 caused a temporary reversal in 2020, but by 2022-2023 high rent burden had become 
-the dominant form of housing stress across California.
+The tier-over-time analysis reveals a clear statewide shift. In 2012, 36 of
+58 counties were classified as high unemployment burden following the Great
+Recession. By 2023 that number had fallen to 2 as labor markets recovered,
+while the high rent burden tier grew from near zero to 14 counties. COVID-19
+caused a temporary reversal in 2020 before a rapid recovery through 2022.
 
 ## How to Run
 
 ### 1. Clone the repository
 git clone https://github.com/adelagortiz/dsci10_spring2026_final_project 
-git cd dsci10_spring2026_final_project
+cd dsci10_spring2026_final_project
 
 ### 2. Install required packages
-pip install pandas requests numpy scikit-learn python-dotenv matplotlib geopandas openpyxl xlrd python-calamine
+pip install pandas requests numpy scikit-learn python-dotenv matplotlib geopandas
 
 ### 3. Set up your Census API key
 
