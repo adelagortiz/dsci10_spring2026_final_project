@@ -116,13 +116,13 @@ policy tier, and displays all four visualizations.
 
 ### Libraries used
 
-- `pandas` — data loading, cleaning, and merging
-- `requests` — Census API calls
-- `numpy` — numerical operations
-- `scikit-learn` — StandardScaler and KMeans clustering
-- `matplotlib` — chart generation
-- `geopandas` — California county map
-- `python-dotenv` — loading the Census API key from .env
+- `pandas`: data loading, cleaning, and merging
+- `requests`: Census API calls
+- `numpy`: numerical operations
+- `scikit-learn`: StandardScaler and KMeans clustering
+- `matplotlib`: chart generation
+- `geopandas`: California county map
+- `python-dotenv`: loading the Census API key from .env
 
 ## Generative AI Usage
 
