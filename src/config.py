@@ -24,6 +24,11 @@ CENSUS_VARIABLES = "NAME,B25064_001E,B25070_010E"
 LAUS_FILE = "laus_ca.csv"
 HUD_HISTORY_FILE = "fmr_history.csv"
 
+# direct download URLs for the two non-API data sources
+LAUS_DOWNLOAD_URL = "https://drive.google.com/uc?export=download&confirm=t&id=1ZOal3nMCNAjIZwnk4CX8IQulNbIgMJE4"
+HUD_DOWNLOAD_URL = "https://drive.google.com/uc?export=download&confirm=t&id=1hMw6kSAtoD3C50gWBMbyvfeM1Fv7Gpu4"
+
+
 # output file names
 MERGED_FILE = "merged_ca_housing.csv"
 CLUSTERED_FILE = "ca_housing_clustered.csv"

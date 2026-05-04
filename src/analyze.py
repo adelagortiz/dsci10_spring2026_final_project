@@ -52,10 +52,10 @@ def label_clusters(df):
     low = [c for c in remaining if c != moderate][0]
 
     label_map = {
-        high_rent: "high rent burden",
-        high_unemp: "high unemployment burden",
-        moderate: "moderate rent burden",
-        low: "low burden"
+        high_rent: "High rent burden",
+        high_unemp: "High unemployment burden",
+        moderate: "Moderate rent burden",
+        low: "Low burden"
     }
 
     print("cluster label map:", label_map)
@@ -85,42 +85,40 @@ def plot_cluster_summary(df):
     summary = df.groupby("policy_tier")[CLUSTER_FEATURES].mean().round(0)
 
     # left panel ordered by rent descending so bars step down cleanly
-    rent_tiers = ["high rent burden", "moderate rent burden", "low burden", "high unemployment burden"]
+    rent_tiers = ["High rent burden", "Moderate rent burden", "Low burden", "High unemployment burden"]
 
     # right panel ordered by unemployment descending so bars step down cleanly
-    unemp_tiers = ["high unemployment burden", "low burden", "moderate rent burden", "high rent burden"]
+    unemp_tiers = ["High unemployment burden", "Low burden", "Moderate rent burden", "High rent burden"]
 
     width = 0.35
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 7))
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
-
-    # left panel: rent variables ordered by rent descending
     summary_rent = summary.reindex(rent_tiers)
     x1 = range(len(rent_tiers))
 
     bars1 = ax1.bar([i - width/2 for i in x1], summary_rent["median_gross_rent"],
-                    width=width, label="median gross rent", color="#4a7fb5", alpha=0.85)
+                    width=width, label="Median Gross Rent", color="#4a7fb5", alpha=0.85)
     bars2 = ax1.bar([i + width/2 for i in x1], summary_rent["fmr_2br"],
-                    width=width, label="hud 2br fair market rent", color="#4a9e6b", alpha=0.85)
+                    width=width, label="HUD 2BR Fair Market Rent", color="#4a9e6b", alpha=0.85)
 
     ax1.set_xticks(list(x1))
-    ax1.set_xticklabels(rent_tiers, rotation=15, ha="right")
-    ax1.set_ylabel("dollars ($)")
-    ax1.set_title("avg rent by policy tier (high to low)")
-    ax1.legend()
+    ax1.set_xticklabels(rent_tiers, rotation=20, ha="right", fontsize=13)
+    ax1.set_ylabel("Dollars ($)", fontsize=14)
+    ax1.set_title("Avg Rent by Policy Tier", fontsize=16, fontweight="bold")
+    ax1.legend(fontsize=12)
+    ax1.tick_params(axis="y", labelsize=12)
 
     for bar in bars1:
         ax1.text(bar.get_x() + bar.get_width() / 2,
                  bar.get_height() + 30,
                  f"${int(bar.get_height()):,}",
-                 ha="center", va="bottom", fontsize=8)
+                 ha="center", va="bottom", fontsize=11)
     for bar in bars2:
         ax1.text(bar.get_x() + bar.get_width() / 2,
                  bar.get_height() + 30,
                  f"${int(bar.get_height()):,}",
-                 ha="center", va="bottom", fontsize=8)
+                 ha="center", va="bottom", fontsize=11)
 
-    # right panel: unemployment ordered by unemployment descending
     summary_unemp = summary.reindex(unemp_tiers)
     x2 = range(len(unemp_tiers))
 
@@ -128,19 +126,20 @@ def plot_cluster_summary(df):
                     width=0.5, color="#e05c4b", alpha=0.85)
 
     ax2.set_xticks(list(x2))
-    ax2.set_xticklabels(unemp_tiers, rotation=15, ha="right")
-    ax2.set_ylabel("percent (%)")
-    ax2.set_title("avg unemployment rate by policy tier (high to low)")
+    ax2.set_xticklabels(unemp_tiers, rotation=20, ha="right", fontsize=13)
+    ax2.set_ylabel("Percent (%)", fontsize=14)
+    ax2.set_title("Avg Unemployment Rate by Policy Tier", fontsize=16, fontweight="bold")
+    ax2.tick_params(axis="y", labelsize=12)
 
     for bar in bars3:
         ax2.text(bar.get_x() + bar.get_width() / 2,
                  bar.get_height() + 0.1,
                  f"{bar.get_height():.1f}%",
-                 ha="center", va="bottom", fontsize=9)
+                 ha="center", va="bottom", fontsize=12)
 
     plt.tight_layout()
     outpath = os.path.join(RESULTS_DIR, "cluster_summary.png")
-    plt.savefig(outpath, dpi=150)
+    plt.savefig(outpath, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"Saved cluster summary chart to {outpath}")
 
@@ -150,10 +149,10 @@ def plot_counties_by_tier(df):
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
     colors = {
-        "high rent burden": "tomato",
-        "high unemployment burden": "steelblue",
-        "moderate rent burden": "goldenrod",
-        "low burden": "seagreen"
+        "High rent burden": "tomato",
+        "High unemployment burden": "steelblue",
+        "Moderate rent burden": "goldenrod",
+        "Low burden": "seagreen"
     }
 
     # counties to label on the chart so the audience can orient themselves
@@ -162,11 +161,11 @@ def plot_counties_by_tier(df):
         "Imperial", "Fresno", "Tulare", "Marin", "Kings", "Colusa"
     ]
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(13, 9))
 
     for tier, group in df[df["year"] == 2023].groupby("policy_tier"):
         ax.scatter(group["unemployment_rate"], group["median_gross_rent"],
-                   label=tier, color=colors[tier], alpha=0.7, s=70)
+                   label=tier, color=colors[tier], alpha=0.7, s=100)
 
     # add labels for notable counties
     df_2023 = df[df["year"] == 2023]
@@ -174,19 +173,20 @@ def plot_counties_by_tier(df):
         if row["county_name"] in label_these:
             ax.annotate(row["county_name"],
                         xy=(row["unemployment_rate"], row["median_gross_rent"]),
-                        xytext=(5, 5),
+                        xytext=(6, 6),
                         textcoords="offset points",
-                        fontsize=8,
+                        fontsize=11,
                         color="black")
 
-    ax.set_xlabel("unemployment rate (%)")
-    ax.set_ylabel("median gross rent ($)")
-    ax.set_title("california counties by policy tier (2023)")
-    ax.legend()
+    ax.set_xlabel("Unemployment Rate (%)", fontsize=14)
+    ax.set_ylabel("Median Gross Rent ($)", fontsize=14)
+    ax.set_title("California Counties by Policy Tier (2023)", fontsize=16, fontweight="bold")
+    ax.tick_params(axis="both", labelsize=12)
+    ax.legend(fontsize=14, markerscale=1.3)
 
     plt.tight_layout()
     outpath = os.path.join(RESULTS_DIR, "counties_by_tier_2023.png")
-    plt.savefig(outpath)
+    plt.savefig(outpath, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"Saved county scatter plot to {outpath}")
 
@@ -197,21 +197,27 @@ def plot_tier_over_time(df):
 
     counts = df.groupby(["year", "policy_tier"]).size().unstack(fill_value=0)
 
-    ax = counts.plot(figsize=(10, 5), marker="o")
-    plt.title("number of counties per policy tier over time")
-    plt.xlabel("year")
-    plt.ylabel("number of counties")
-    plt.legend(title="policy tier")
+    fig, ax = plt.subplots(figsize=(12, 6))
+    counts.plot(ax=ax, marker="o", linewidth=2)
 
-    # annotate 2020 pandemic spike
-    ax.axvline(x=2020, color="grey", linestyle="--", linewidth=1, alpha=0.7)
-    ax.text(2020.1, ax.get_ylim()[1] * 0.92,
+    plt.title("Number of Counties Per Policy Tier Over Time", fontsize=16, fontweight="bold")
+    plt.xlabel("Year", fontsize=14)
+    plt.ylabel("Number of Counties", fontsize=14)
+    ax.tick_params(axis="both", labelsize=12)
+
+    # move legend to upper left so it doesn't overlap the 2020 annotation
+    ax.legend(title="Policy Tier", fontsize=12, title_fontsize=13, loc="upper left")
+
+    ax.axvline(x=2020, color="grey", linestyle="--", linewidth=1.2, alpha=0.7)
+
+    # shift the label left of the dashed line so it doesn't overlap the legend
+    ax.text(2019.85, ax.get_ylim()[1] * 0.72,
             "2020 pandemic\nunemployment spike",
-            fontsize=8, color="grey", ha="right")
+            fontsize=10, color="grey", ha="right")
 
     plt.tight_layout()
     outpath = os.path.join(RESULTS_DIR, "tier_over_time.png")
-    plt.savefig(outpath)
+    plt.savefig(outpath, dpi=150, bbox_inches="tight")
     plt.close()
     print(f"Saved tier over time chart to {outpath}")
 
@@ -244,10 +250,10 @@ def plot_california_map(df):
 
     # assign colors to each tier
     color_map = {
-        "high rent burden": "#e05c4b",
-        "high unemployment burden": "#4a7fb5",
-        "moderate rent burden": "#e8a838",
-        "low burden": "#4a9e6b"
+        "High rent burden": "#e05c4b",
+        "High unemployment burden": "#4a7fb5",
+        "Moderate rent burden": "#e8a838",
+        "Low burden": "#4a9e6b"
     }
     merged["color"] = merged["policy_tier"].map(color_map).fillna("lightgrey")
 
@@ -269,22 +275,22 @@ def plot_california_map(df):
         if name in label_these:
             centroid = row.geometry.centroid
             ax.annotate(name, xy=(centroid.x, centroid.y),
-                        ha="center", fontsize=7, color="white", fontweight="bold")
+                        ha="center", fontsize=12, color="black", fontweight="bold")
 
     # add a manual legend
     legend_elements = [
-        Patch(facecolor="#e05c4b", label="high rent burden"),
-        Patch(facecolor="#e8a838", label="moderate rent burden"),
-        Patch(facecolor="#4a9e6b", label="low burden"),
-        Patch(facecolor="#4a7fb5", label="high unemployment burden"),
-        Patch(facecolor="lightgrey", label="no data")
+        Patch(facecolor="#e05c4b", label="High rent burden"),
+        Patch(facecolor="#e8a838", label="Moderate rent burden"),
+        Patch(facecolor="#4a9e6b", label="Low burden"),
+        Patch(facecolor="#4a7fb5", label="High unemployment burden"),
+        Patch(facecolor="lightgrey", label="No data")
     ]
     ax.legend(handles=legend_elements, loc="lower left",
-              fontsize=13, title="policy tier", title_fontsize=14,
+              fontsize=18, title="Policy Tier", title_fontsize=20,
               framealpha=0.9, edgecolor="grey")
 
-    ax.set_title("california counties by policy tier (2023)",
-                 fontsize=16, pad=15)
+    ax.set_title("California Counties by Policy Tier (2023)",
+                 fontsize=20, fontweight="bold", pad=-50)
     ax.axis("off")
 
     plt.tight_layout()

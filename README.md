@@ -22,8 +22,21 @@ how county-level housing stress changed before, during, and after the COVID-19 p
 | # | Name | Source | Type | Fields | Format |
 |---|------|--------|------|--------|--------|
 | 1 | ACS 5-Year Estimates | census.gov | API | NAME, B25064_001E (median gross rent), B25070_010E (renters paying 50%+ of income on rent) | JSON via API, saved as CSV |
-| 2 | HUD Fair Market Rents | huduser.gov | File | county name, state, year, FMR for 0-4 bedroom units | CSV, single historical file covering 1983 to present |
-| 3 | BLS Local Area Unemployment Statistics | data.ca.gov | File | county name, year, labor force, employment, unemployment rate | CSV |
+| 2 | HUD Fair Market Rents | huduser.gov (mirrored on Google Drive) | File, auto-downloaded | county name, state, year, FMR for 0-4 bedroom units | CSV, single historical file covering 1983 to present |
+| 3 | BLS Local Area Unemployment Statistics | data.ca.gov (mirrored on Google Drive) | File, auto-downloaded | county name, year, labor force, employment, unemployment rate | CSV |
+
+> Note: HUD and LAUS files are mirrored on Google Drive and downloaded automatically
+> when you run main.py. The original sources are huduser.gov and data.ca.gov respectively.
+
+**Final dataset used in analysis:** 693 county-year observations across 58 California counties and 12 years (2012–2023), after inner-joining all three sources and dropping rows with missing values.
+
+## Features Used in Clustering
+
+| Feature | Description | Units | Source |
+|---------|-------------|-------|--------|
+| `median_gross_rent` | Median monthly gross rent paid by renter-occupied households in the county | Dollars ($) | ACS 5-Year Estimates (Census Bureau), variable B25064_001E |
+| `fmr_2br` | HUD Fair Market Rent for a 2-bedroom unit — the 40th percentile rent used by HUD to set housing voucher payment standards | Dollars ($) | HUD FMR History file |
+| `unemployment_rate` | Annual average unemployment rate for the county | Percent (%) | BLS Local Area Unemployment Statistics (LAUS), via data.ca.gov |
 
 ## Analysis
 
@@ -80,30 +93,18 @@ Get a free Census API key at https://api.census.gov/data/key_signup.html
 In the `src/` directory, create a `.env` file using `.env.example` as a
 template and add your key: CENSUS_API_KEY=your_key_here
 
-### 4. Download the HUD Fair Market Rents data
+### 4. Run the pipeline
 
-Go to https://www.huduser.gov/portal/datasets/fmr.html and click the
-"History" tab. Download the file labeled "FMR History 1983 - Present:
-2-Bedroom Unit data in CSV" and save it to your `data/` folder as:
+From inside the `src/` directory run:
 
-data/fmr_history.csv
+python3 main.py
 
-### 5. Download the BLS LAUS data
-
-Go to https://data.ca.gov/dataset/local-area-unemployment-statistics-laus-annual-average
-and download the CSV file. Save it to the `data/` folder as: data/laus_ca.csv
-
-### 6. Run the pipeline
-
-From inside the `src/` directory run: python3 main.py
-
-This will fetch Census data automatically via API, load the HUD and LAUS
-files from your `data/` folder, merge all three datasets, run K-Means
-clustering, and save four charts to the `results/` folder.
-
-To run tests: python3 tests.py
-
-### 7. Run the results notebook
+This will automatically download the HUD Fair Market Rents history file from huduser.gov
+and the BLS LAUS unemployment file from data.ca.gov into your `data/` folder, fetch
+Census data via API, merge all three datasets, run K-Means clustering, and save four
+charts to the `results/` folder. If auto-download fails for either file, the error
+message will print the manual download URL and the exact path to save it.
+### 5. Run the results notebook
 
 Open `results.ipynb` from the root of the repository in Jupyter Notebook
 or JupyterLab. Make sure you have run `main.py` first, as the notebook
